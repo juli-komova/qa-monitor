@@ -511,10 +511,15 @@ textarea {
 <!-- LEGEND -->
 <div class="legend">
   <span style="font-size:11px;color:var(--text3);font-weight:600;margin-right:4px">Время в статусе:</span>
-  <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Укладывается в SP</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>OK</div>
   <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>Скоро превысит</div>
-  <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Превышено (прокрастинация)</div>
-  <div class="legend-item"><div class="legend-dot" style="background:#dfe1e6"></div>Нет оценки / не отслеживается</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Превышено</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#dfe1e6"></div>Не отслеживается</div>
+  <span style="font-size:11px;color:var(--text3);margin-left:4px">·</span>
+  <span style="font-size:11px;color:var(--text3)">Ready for QA: 🟡2д / 🔴3д</span>
+  <span style="font-size:11px;color:var(--text3)">QA in progress: SP÷6</span>
+  <span style="font-size:11px;color:var(--text3)">QA Failed: 🟡1д / 🔴2д</span>
+  <span style="font-size:11px;color:var(--text3)">Awaiting release: 🟡3д / 🔴5д</span>
 </div>
 
 <!-- BOARD -->
@@ -575,10 +580,10 @@ const KEY = 'qa_monitor_v2';
 
 const COLUMNS = [
   { id: 'DEV in progress',  label: 'Dev in progress', color: '#6554c0' },
-  { id: 'Ready for QA',     label: 'Ready for QA',    color: '#ff8b00' },
+  { id: 'Ready for QA',     label: 'Ready for QA',    color: '#ff8b00', track: true },
   { id: 'QA in progress',   label: 'QA in progress',  color: '#0065ff', track: true },
-  { id: 'QA Failed',        label: 'QA Failed',        color: '#de350b' },
-  { id: 'Awaiting release', label: 'Awaiting release', color: '#00875a' },
+  { id: 'QA Failed',        label: 'QA Failed',        color: '#de350b', track: true },
+  { id: 'Awaiting release', label: 'Awaiting release', color: '#00875a', track: true },
   { id: 'Done',             label: 'Done',             color: '#97a0af' },
 ];
 
@@ -604,24 +609,45 @@ function daysInStatus(key, status, snaps) {
   return d;
 }
 
-function timeBadgeHtml(task, snaps, track) {
-  const sp = parseInt(task.sp)||0;
-  if (!track || sp === 0) {
-    return `<span class="time-badge none">— нет SP</span>`;
-  }
-  const days = daysInStatus(task.key, task.status, snaps);
-  const limit = Math.max(1, Math.ceil(sp / 6));
-  const pct = Math.min(100, Math.round(days / limit * 100));
+const STATUS_LIMITS = {
+  'QA in progress':   { mode: 'sp' },
+  'Ready for QA':     { mode: 'fixed', warn: 2, over: 3 },
+  'QA Failed':        { mode: 'fixed', warn: 1, over: 2 },
+  'Awaiting release': { mode: 'fixed', warn: 3, over: 5 },
+};
 
+function getLimit(task) {
+  const cfg = STATUS_LIMITS[task.status];
+  if (!cfg) return null;
+  if (cfg.mode === 'sp') {
+    const sp = parseInt(task.sp)||0;
+    if (sp === 0) return null;
+    const over = Math.max(1, Math.ceil(sp/6));
+    return { warn: Math.max(1, over - 1), over, display: over };
+  }
+  return { warn: cfg.warn, over: cfg.over, display: cfg.over };
+}
+
+function timeBadgeHtml(task, snaps, track) {
+  if (!track) return '';
+  const days = daysInStatus(task.key, task.status, snaps);
+  const lim = getLimit(task);
+
+  if (!lim) {
+    return `<span class="time-badge none">⏱ ${days}д</span>`;
+  }
+
+  const pct = Math.min(100, Math.round(days / lim.display * 100));
   let cls, icon, label;
-  if (days === 1 && snaps.length === 1) {
+
+  if (snaps.length === 1 && days === 1) {
     cls = 'new'; icon = '●'; label = 'день 1';
-  } else if (days >= limit) {
-    cls = 'over'; icon = '▲'; label = `${days}д / ${limit}д`;
-  } else if (days >= limit - 1 && limit > 1) {
-    cls = 'warn'; icon = '◆'; label = `${days}д / ${limit}д`;
+  } else if (days >= lim.over) {
+    cls = 'over'; icon = '▲'; label = `${days}д — превышено`;
+  } else if (days >= lim.warn) {
+    cls = 'warn'; icon = '◆'; label = `${days}д / ${lim.display}д`;
   } else {
-    cls = 'ok'; icon = '▼'; label = `${days}д / ${limit}д`;
+    cls = 'ok'; icon = '▼'; label = `${days}д / ${lim.display}д`;
   }
 
   const barColor = cls==='over' ? '#de350b' : cls==='warn' ? '#ff8b00' : '#00875a';
@@ -631,12 +657,12 @@ function timeBadgeHtml(task, snaps, track) {
 }
 
 function cardBorderCls(task, snaps, track) {
-  const sp = parseInt(task.sp)||0;
-  if (!track || sp === 0) return 'time-none';
+  if (!track) return 'time-none';
   const days = daysInStatus(task.key, task.status, snaps);
-  const limit = Math.max(1, Math.ceil(sp/6));
-  if (days >= limit) return 'time-over';
-  if (days >= limit-1 && limit > 1) return 'time-warn';
+  const lim = getLimit(task);
+  if (!lim) return 'time-none';
+  if (days >= lim.over) return 'time-over';
+  if (days >= lim.warn) return 'time-warn';
   return 'time-ok';
 }
 
