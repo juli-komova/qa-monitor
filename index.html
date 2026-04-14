@@ -5,25 +5,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>QA Monitor — Тарифы</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Unbounded:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0d0f12;
-  --bg2: #13161b;
-  --bg3: #1a1e25;
-  --border: rgba(255,255,255,0.07);
-  --border2: rgba(255,255,255,0.12);
-  --text: #e8eaed;
-  --text2: #8b909a;
-  --text3: #555a63;
-  --accent: #4ade80;
-  --accent2: #22c55e;
-  --red: #f87171;
-  --amber: #fbbf24;
-  --blue: #60a5fa;
-  --purple: #a78bfa;
+  --bg: #f4f5f7;
+  --bg-col: #ebecf0;
+  --card: #ffffff;
+  --border: #dfe1e6;
+  --text: #172b4d;
+  --text2: #5e6c84;
+  --text3: #97a0af;
+  --accent: #0052cc;
+
+  --col-dev: #6554c0;
+  --col-ready: #ff8b00;
+  --col-inprog: #0065ff;
+  --col-failed: #de350b;
+  --col-await: #00875a;
+  --col-done: #97a0af;
+
+  --green: #00875a;
+  --red: #de350b;
+  --amber: #ff8b00;
+  --blue: #0052cc;
+
+  --sans: 'Inter', sans-serif;
   --mono: 'JetBrains Mono', monospace;
-  --display: 'Unbounded', sans-serif;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -31,627 +38,561 @@
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: var(--mono);
+  font-family: var(--sans);
   font-size: 13px;
-  line-height: 1.6;
+  line-height: 1.5;
   min-height: 100vh;
 }
 
-/* Grid lines background */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-  background-size: 40px 40px;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
-
-/* Header */
-header {
-  border-bottom: 1px solid var(--border2);
-  padding: 20px 0;
-  margin-bottom: 32px;
-}
-
-.header-inner {
+/* TOP BAR */
+.topbar {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  padding: 0 20px;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
-.logo {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-}
+.topbar-left { display: flex; align-items: center; gap: 16px; }
 
-.logo-main {
-  font-family: var(--display);
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--accent);
-  letter-spacing: -0.02em;
-}
-
-.logo-sub {
-  font-size: 11px;
-  color: var(--text3);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.status-dot {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 8px var(--accent2);
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-
-.last-scan { font-size: 11px; color: var(--text3); }
-
-/* Metrics row */
-.metrics {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  margin-bottom: 28px;
-}
-
-.metric {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  padding: 16px 18px;
-  position: relative;
-  overflow: hidden;
-}
-
-.metric::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: var(--accent);
-  opacity: 0.3;
-}
-
-.metric.alert::before { background: var(--red); opacity: 0.8; }
-.metric.warn::before { background: var(--amber); opacity: 0.8; }
-.metric.info::before { background: var(--blue); opacity: 0.6; }
-
-.metric-label {
-  font-size: 10px;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: 8px;
-}
-
-.metric-val {
-  font-family: var(--display);
-  font-size: 28px;
+.project-name {
+  font-size: 14px;
   font-weight: 600;
   color: var(--text);
-  line-height: 1;
 }
 
-.metric.alert .metric-val { color: var(--red); }
-.metric.info .metric-val { color: var(--blue); }
-
-.metric-delta {
-  font-size: 11px;
-  margin-top: 5px;
-  color: var(--text3);
+.board-title {
+  font-size: 13px;
+  color: var(--text2);
 }
 
-.delta-good { color: var(--accent); }
-.delta-bad { color: var(--red); }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
 
-/* Tabs */
-.tabs {
-  display: flex;
-  gap: 2px;
-  margin-bottom: 20px;
-  border-bottom: 1px solid var(--border);
-}
-
-.tab {
-  padding: 8px 16px;
-  font-size: 11px;
-  font-family: var(--mono);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text3);
+.btn {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 3px;
   cursor: pointer;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-  transition: color 0.15s, border-color 0.15s;
+  border: none;
+  transition: background 0.15s;
 }
 
-.tab:hover { color: var(--text2); }
-.tab.active { color: var(--accent); border-color: var(--accent); }
+.btn-default { background: #f4f5f7; color: var(--text2); }
+.btn-default:hover { background: #ebecf0; }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: #0747a6; }
 
-/* Section */
-.section { margin-bottom: 28px; }
-
-.section-title {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--text3);
-  margin-bottom: 12px;
+/* FILTERS */
+.filterbar {
+  padding: 10px 20px;
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.section-title::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
-
-/* Table */
-.table-wrap { overflow-x: auto; }
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--text3);
-  padding: 8px 12px;
-  text-align: left;
+  flex-wrap: wrap;
   border-bottom: 1px solid var(--border);
-  font-weight: 500;
+  background: #fff;
 }
 
-td {
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--border);
-  vertical-align: middle;
+.filter-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; margin-right: 4px; }
+
+.filter-chip {
+  padding: 4px 12px;
+  border-radius: 20px;
   font-size: 12px;
-}
-
-tr:last-child td { border-bottom: none; }
-tr:hover td { background: rgba(255,255,255,0.02); }
-
-.key-link { color: var(--blue); text-decoration: none; font-weight: 500; }
-.key-link:hover { text-decoration: underline; }
-
-.summary-text { color: var(--text2); font-size: 11px; max-width: 280px; }
-
-/* Badges */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 8px;
-  border-radius: 2px;
-  font-size: 10px;
   font-weight: 500;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  white-space: nowrap;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.15s;
+  background: var(--bg-col);
+  color: var(--text2);
 }
 
-.badge-green { background: rgba(74,222,128,0.12); color: var(--accent); border: 1px solid rgba(74,222,128,0.2); }
-.badge-red { background: rgba(248,113,113,0.12); color: var(--red); border: 1px solid rgba(248,113,113,0.2); }
-.badge-amber { background: rgba(251,191,36,0.12); color: var(--amber); border: 1px solid rgba(251,191,36,0.2); }
-.badge-blue { background: rgba(96,165,250,0.12); color: var(--blue); border: 1px solid rgba(96,165,250,0.2); }
-.badge-purple { background: rgba(167,139,250,0.12); color: var(--purple); border: 1px solid rgba(167,139,250,0.2); }
-.badge-gray { background: rgba(255,255,255,0.05); color: var(--text3); border: 1px solid var(--border); }
+.filter-chip:hover { background: #dfe1e6; }
+.filter-chip.active { background: #deebff; color: var(--accent); border-color: var(--accent); }
+.filter-chip.all.active { background: var(--accent); color: #fff; }
 
-/* Avatar */
-.avatar {
-  width: 26px; height: 26px;
-  border-radius: 50%;
-  display: inline-flex;
+/* BOARD */
+.board-wrap {
+  overflow-x: auto;
+  padding: 16px 20px 32px;
+}
+
+.board {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  min-width: max-content;
+}
+
+/* COLUMN */
+.col {
+  width: 240px;
+  flex-shrink: 0;
+  background: var(--bg-col);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+}
+
+.col-header {
+  padding: 10px 12px 8px;
+  display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  font-weight: 700;
+  gap: 7px;
+}
+
+.col-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
   flex-shrink: 0;
 }
 
-.av-h { background: rgba(167,139,250,0.15); color: var(--purple); }
-.av-k { background: rgba(74,222,128,0.15); color: var(--accent); }
-.av-p { background: rgba(251,191,36,0.15); color: var(--amber); }
+.col-name {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text2);
+  flex: 1;
+}
 
-.eng-cell { display: flex; align-items: center; gap: 7px; }
-.eng-name { font-size: 11px; color: var(--text2); white-space: nowrap; }
+.col-count {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text3);
+  background: rgba(9,30,66,0.08);
+  padding: 1px 7px;
+  border-radius: 10px;
+}
 
-/* Progress bar */
-.prog-wrap {
-  width: 60px; height: 4px;
-  background: rgba(255,255,255,0.07);
+.col-cards {
+  padding: 4px 8px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-height: 60px;
+}
+
+/* CARD */
+.card {
+  background: var(--card);
+  border-radius: 3px;
+  padding: 10px 11px;
+  box-shadow: 0 1px 2px rgba(9,30,66,0.1);
+  cursor: pointer;
+  transition: box-shadow 0.15s, transform 0.1s;
+  position: relative;
+  border-left: 3px solid transparent;
+}
+
+.card:hover {
+  box-shadow: 0 4px 12px rgba(9,30,66,0.15);
+  transform: translateY(-1px);
+}
+
+/* Time border colors */
+.card.time-ok { border-left-color: var(--green); }
+.card.time-warn { border-left-color: var(--amber); }
+.card.time-over { border-left-color: var(--red); }
+.card.time-none { border-left-color: var(--border); }
+
+.card-key {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--blue);
+  font-family: var(--mono);
+  margin-bottom: 5px;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.card-key:hover { text-decoration: underline; }
+
+.card-summary {
+  font-size: 12px;
+  color: var(--text);
+  font-weight: 500;
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.card-labels { display: flex; flex-wrap: wrap; gap: 3px; margin-bottom: 7px; }
+
+.label {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.label-crit { background: #ffebe6; color: #bf2600; }
+.label-high { background: #fffae6; color: #974f0c; }
+.label-med  { background: #e3fcef; color: #006644; }
+.label-low  { background: #f4f5f7; color: #5e6c84; }
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.card-assignee {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.avatar {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  flex-shrink: 0;
+  color: #fff;
+}
+
+.av-h { background: #6554c0; }
+.av-k { background: #00b8d9; }
+.av-p { background: #ff5630; }
+
+.assignee-name { font-size: 11px; color: var(--text2); }
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.sp-badge {
+  font-size: 10px;
+  font-weight: 600;
+  font-family: var(--mono);
+  color: var(--text3);
+  background: var(--bg-col);
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+/* TIME BADGE — main element */
+.time-badge {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 7px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--mono);
+  white-space: nowrap;
+}
+
+.time-badge.ok    { background: #e3fcef; color: #006644; }
+.time-badge.warn  { background: #fffae6; color: #974f0c; }
+.time-badge.over  { background: #ffebe6; color: #bf2600; }
+.time-badge.new   { background: #deebff; color: #0747a6; }
+.time-badge.none  { background: var(--bg-col); color: var(--text3); }
+
+.time-icon { font-size: 11px; }
+
+/* Progress mini bar under time */
+.time-bar-wrap {
+  margin-top: 6px;
+  height: 3px;
+  background: var(--bg-col);
   border-radius: 2px;
   overflow: hidden;
-  margin-top: 3px;
 }
 
-.prog-bar { height: 100%; border-radius: 2px; transition: width 0.5s; }
+.time-bar { height: 100%; border-radius: 2px; transition: width 0.4s; }
 
-/* Alert cards */
-.alert-list { display: flex; flex-direction: column; gap: 8px; }
-
-.alert-card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--red);
-  padding: 12px 16px;
+/* LEGEND */
+.legend {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-  animation: fadeIn 0.3s ease;
-}
-
-.alert-card.warn { border-left-color: var(--amber); }
-.alert-card.ok { border-left-color: var(--accent); }
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.alert-info { flex: 1; }
-.alert-key { font-size: 11px; font-weight: 700; color: var(--blue); margin-bottom: 3px; }
-.alert-summary { font-size: 11px; color: var(--text2); margin-bottom: 4px; }
-.alert-meta { font-size: 10px; color: var(--text3); }
-
-/* Move cards */
-.move-card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  padding: 10px 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  animation: fadeIn 0.3s ease;
-}
-
-.move-arrow { color: var(--text3); font-size: 14px; }
-
-/* History */
-.hist-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 12px;
+  gap: 16px;
+  padding: 8px 20px;
+  background: #fff;
   border-bottom: 1px solid var(--border);
-  gap: 12px;
+  flex-wrap: wrap;
 }
 
-.hist-row:last-child { border-bottom: none; }
-.hist-date { font-size: 12px; font-weight: 500; color: var(--text); }
-.hist-badges { display: flex; gap: 6px; flex-wrap: wrap; }
-
-/* Import panel */
-.import-panel {
-  background: var(--bg2);
-  border: 1px solid var(--border2);
-  padding: 20px;
-  margin-bottom: 24px;
-}
-
-.import-title {
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
   font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
   color: var(--text2);
-  margin-bottom: 12px;
-  font-weight: 500;
 }
 
-textarea {
-  width: 100%;
-  background: var(--bg3);
-  border: 1px solid var(--border);
+.legend-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+}
+
+/* IMPORT MODAL */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(9,30,66,0.5);
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: #fff;
+  border-radius: 6px;
+  padding: 24px;
+  width: 600px;
+  max-width: calc(100vw - 40px);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(9,30,66,0.25);
+}
+
+.modal-title {
+  font-size: 16px;
+  font-weight: 600;
   color: var(--text);
-  font-family: var(--mono);
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--text3);
+  padding: 0;
+  line-height: 1;
+}
+
+.modal-close:hover { color: var(--text); }
+
+.field-label {
   font-size: 11px;
-  padding: 10px 12px;
-  resize: vertical;
-  min-height: 80px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text2);
+  margin-bottom: 5px;
+  margin-top: 14px;
+  display: block;
+}
+
+input[type=date], textarea, input[type=text] {
+  width: 100%;
+  border: 2px solid var(--border);
+  border-radius: 3px;
+  padding: 8px 10px;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--text);
   outline: none;
   transition: border-color 0.15s;
 }
 
-textarea:focus { border-color: var(--accent); }
-textarea::placeholder { color: var(--text3); }
+input[type=date]:focus, textarea:focus { border-color: var(--accent); }
 
-.btn-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
-
-button {
-  background: transparent;
-  border: 1px solid var(--border2);
-  color: var(--text2);
+textarea {
   font-family: var(--mono);
   font-size: 11px;
-  padding: 7px 16px;
-  cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  transition: all 0.15s;
+  resize: vertical;
+  min-height: 100px;
 }
 
-button:hover { background: rgba(255,255,255,0.05); color: var(--text); border-color: var(--border2); }
-
-button.primary {
-  background: rgba(74,222,128,0.1);
-  border-color: rgba(74,222,128,0.3);
-  color: var(--accent);
+.modal-footer {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  justify-content: flex-end;
 }
 
-button.primary:hover {
-  background: rgba(74,222,128,0.18);
-  border-color: var(--accent);
-}
-
-button.danger {
-  border-color: rgba(248,113,113,0.3);
-  color: var(--red);
-}
-
-button.danger:hover { background: rgba(248,113,113,0.08); }
-
-.import-hint {
-  font-size: 10px;
-  color: var(--text3);
-  margin-top: 8px;
-  line-height: 1.7;
-}
-
-.msg { font-size: 11px; padding: 6px 10px; margin-top: 8px; border-left: 2px solid var(--accent); color: var(--accent); background: rgba(74,222,128,0.05); }
-.msg.err { border-color: var(--red); color: var(--red); background: rgba(248,113,113,0.05); }
-
-/* Empty state */
-.empty {
-  text-align: center;
-  padding: 40px 20px;
-  color: var(--text3);
+.msg {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: 3px;
   font-size: 12px;
-  letter-spacing: 0.05em;
+  font-weight: 500;
 }
 
-.tab-content { display: none; }
-.tab-content.active { display: block; }
+.msg.ok { background: #e3fcef; color: #006644; }
+.msg.err { background: #ffebe6; color: #bf2600; }
 
-/* Footer */
-footer {
-  border-top: 1px solid var(--border);
-  padding: 16px 0;
-  margin-top: 32px;
-  font-size: 10px;
-  color: var(--text3);
+/* HISTORY PANEL */
+.hist-item {
   display: flex;
   justify-content: space-between;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  align-items: center;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  gap: 8px;
 }
 
-@media (max-width: 640px) {
-  .metrics { grid-template-columns: repeat(2, 1fr); }
-  .header-inner { flex-direction: column; align-items: flex-start; gap: 8px; }
+.hist-item:last-child { border-bottom: none; }
+.hist-date { font-size: 12px; font-weight: 600; }
+.hist-chips { display: flex; gap: 5px; flex-wrap: wrap; }
+
+.chip {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
 }
+
+.chip-blue   { background: #deebff; color: #0747a6; }
+.chip-red    { background: #ffebe6; color: #bf2600; }
+.chip-green  { background: #e3fcef; color: #006644; }
+.chip-gray   { background: #f4f5f7; color: #5e6c84; }
+.chip-cur    { background: var(--accent); color: #fff; }
+
+.no-cards {
+  text-align: center;
+  padding: 24px 12px;
+  color: var(--text3);
+  font-size: 12px;
+}
+
+/* EMPTY BOARD */
+.empty-board {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text2);
+}
+
+.empty-board h2 { font-size: 18px; margin-bottom: 8px; color: var(--text); }
+.empty-board p { font-size: 13px; margin-bottom: 20px; color: var(--text2); }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="container">
-    <div class="header-inner">
-      <div class="logo">
-        <span class="logo-main">QA Monitor</span>
-        <span class="logo-sub">Команда Тарифы</span>
-      </div>
-      <div class="header-right">
-        <div class="status-dot"></div>
-        <span class="last-scan" id="last-scan">Нет данных</span>
-      </div>
-    </div>
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <span class="project-name">QA_TRF_Sprint</span>
+    <span style="color:var(--text3)">›</span>
+    <span class="board-title">Канбан-доска</span>
+    <span id="snap-indicator" style="font-size:11px;color:var(--text3);margin-left:4px"></span>
   </div>
-</header>
-
-<div class="container">
-
-  <!-- Metrics -->
-  <div class="metrics" id="metrics">
-    <div class="metric">
-      <div class="metric-label">Всего задач</div>
-      <div class="metric-val" id="m-total">—</div>
-      <div class="metric-delta" id="m-total-d"></div>
-    </div>
-    <div class="metric info">
-      <div class="metric-label">QA in progress</div>
-      <div class="metric-val" id="m-inprog">—</div>
-      <div class="metric-delta" id="m-inprog-d"></div>
-    </div>
-    <div class="metric alert">
-      <div class="metric-label">QA Failed</div>
-      <div class="metric-val" id="m-failed">—</div>
-      <div class="metric-delta" id="m-failed-d"></div>
-    </div>
-    <div class="metric warn">
-      <div class="metric-label">Алертов</div>
-      <div class="metric-val" id="m-alerts">—</div>
-      <div class="metric-delta" id="m-alerts-d">прокрастинация</div>
-    </div>
+  <div class="topbar-right">
+    <button class="btn btn-default" onclick="openHistory()">История</button>
+    <button class="btn btn-primary" onclick="openImport()">+ Импорт снимка</button>
   </div>
-
-  <!-- Tabs -->
-  <div class="tabs">
-    <div class="tab active" onclick="showTab('today')">Сегодня</div>
-    <div class="tab" onclick="showTab('alerts')">Алерты</div>
-    <div class="tab" onclick="showTab('history')">История</div>
-    <div class="tab" onclick="showTab('import')">Импорт данных</div>
-  </div>
-
-  <!-- Today -->
-  <div class="tab-content active" id="tab-today">
-    <div class="section">
-      <div class="section-title">Движение задач</div>
-      <div class="alert-list" id="moves-list"><div class="empty">Нет данных — добавьте снимок через вкладку «Импорт данных»</div></div>
-    </div>
-    <div class="section">
-      <div class="section-title">QA in progress</div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Инженер</th>
-              <th>Задача</th>
-              <th>SP</th>
-              <th>Дней в статусе</th>
-              <th>Лимит</th>
-              <th>Статус</th>
-            </tr>
-          </thead>
-          <tbody id="inprog-body">
-            <tr><td colspan="6" class="empty">Нет данных</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <div class="section">
-      <div class="section-title">Все задачи</div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Инженер</th>
-              <th>Задача</th>
-              <th>Статус</th>
-              <th>SP</th>
-              <th>Приоритет</th>
-            </tr>
-          </thead>
-          <tbody id="all-body">
-            <tr><td colspan="5" class="empty">Нет данных</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- Alerts -->
-  <div class="tab-content" id="tab-alerts">
-    <div class="section">
-      <div class="section-title">Активные алерты прокрастинации</div>
-      <div class="alert-list" id="alerts-list"><div class="empty">Нет данных</div></div>
-    </div>
-  </div>
-
-  <!-- History -->
-  <div class="tab-content" id="tab-history">
-    <div class="section">
-      <div class="section-title">История снимков</div>
-      <div id="history-list"><div class="empty">История пуста</div></div>
-    </div>
-  </div>
-
-  <!-- Import -->
-  <div class="tab-content" id="tab-import">
-    <div class="import-panel">
-      <div class="import-title">Добавить снимок вручную</div>
-      <div style="font-size:11px;color:var(--text2);margin-bottom:12px;line-height:1.7">
-        Попросите Claude просканировать доски и скопируйте JSON с задачами сюда.<br>
-        Формат: массив объектов <code style="color:var(--accent)">[{key, summary, sp, assignee, status, priority}, ...]</code>
-      </div>
-      <div style="margin-bottom:10px">
-        <label style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);display:block;margin-bottom:4px">Дата снимка</label>
-        <input type="date" id="snap-date" style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:6px 10px;outline:none">
-      </div>
-      <textarea id="json-input" placeholder='[{"key":"DEVTRF-123","summary":"Название задачи","sp":"5","assignee":"Никулин Николай","status":"QA in progress","priority":"Критический приоритет"}, ...]'></textarea>
-      <div class="btn-row">
-        <button class="primary" onclick="importSnapshot()">Сохранить снимок</button>
-        <button onclick="clearInput()">Очистить</button>
-        <button class="danger" onclick="clearAllData()">Удалить всю историю</button>
-      </div>
-      <div id="import-msg"></div>
-      <div class="import-hint">
-        Пример запроса к Claude:<br>
-        <span style="color:var(--accent)">"Сканируй доски команды Тарифы и выдай мне JSON задач для импорта в дашборд"</span>
-      </div>
-    </div>
-
-    <div class="import-panel">
-      <div class="import-title">Jira-ссылки для сканирования</div>
-      <div style="display:flex;flex-direction:column;gap:6px;font-size:11px">
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">
-          <span style="color:var(--text2)">НН — Никулин Николай</span>
-          <a href="https://jira.share-tech.ru/secure/RapidBoard.jspa?rapidView=283&quickFilter=1653" target="_blank" class="key-link" style="font-size:10px">Открыть →</a>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">
-          <span style="color:var(--text2)">КА — Кочергина Анна</span>
-          <a href="https://jira.share-tech.ru/secure/RapidBoard.jspa?rapidView=283&quickFilter=1654" target="_blank" class="key-link" style="font-size:10px">Открыть →</a>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0">
-          <span style="color:var(--text2)">ПЕ — Прончатов Евгений</span>
-          <a href="https://jira.share-tech.ru/secure/RapidBoard.jspa?rapidView=283&quickFilter=1705" target="_blank" class="key-link" style="font-size:10px">Открыть →</a>
-        </div>
-      </div>
-    </div>
-  </div>
-
 </div>
 
-<footer class="container">
-  <span>QA Monitor v1.0 — Тарифы</span>
-  <span id="footer-snap-count">0 снимков</span>
-</footer>
+<!-- FILTERS -->
+<div class="filterbar">
+  <span class="filter-label">Инженер:</span>
+  <div class="filter-chip all active" onclick="setFilter('all')">Все</div>
+  <div class="filter-chip" onclick="setFilter('НН')">НН Никулин</div>
+  <div class="filter-chip" onclick="setFilter('КА')">КА Кочергина</div>
+  <div class="filter-chip" onclick="setFilter('ПЕ')">ПЕ Прончатов</div>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <span style="font-size:11px;color:var(--text3);font-weight:600;margin-right:4px">Время в статусе:</span>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Укладывается в SP</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>Скоро превысит</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Превышено (прокрастинация)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#dfe1e6"></div>Нет оценки / не отслеживается</div>
+</div>
+
+<!-- BOARD -->
+<div class="board-wrap">
+  <div class="board" id="board">
+    <div class="empty-board">
+      <h2>Нет данных</h2>
+      <p>Нажмите «Импорт снимка» и вставьте JSON задач от Claude</p>
+      <button class="btn btn-primary" onclick="openImport()">+ Импорт снимка</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORT MODAL -->
+<div class="modal-overlay" id="import-modal">
+  <div class="modal">
+    <div class="modal-title">
+      Импорт снимка
+      <button class="modal-close" onclick="closeImport()">×</button>
+    </div>
+    <label class="field-label">Дата снимка</label>
+    <input type="date" id="snap-date">
+    <label class="field-label">JSON задач</label>
+    <textarea id="json-input" placeholder='[{"key":"DEVTRF-123","summary":"...","sp":"5","assignee":"Никулин Николай","status":"QA in progress","priority":"Критический приоритет"}]'></textarea>
+    <div id="import-msg"></div>
+    <div class="modal-footer">
+      <button class="btn btn-default" onclick="closeImport()">Отмена</button>
+      <button class="btn btn-primary" onclick="importSnapshot()">Сохранить</button>
+    </div>
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:var(--text3);margin-bottom:8px">Jira ссылки для Claude</div>
+      <div style="display:flex;flex-direction:column;gap:4px;font-size:11px">
+        <div>НН — <a href="https://jira.share-tech.ru/secure/RapidBoard.jspa?rapidView=283&quickFilter=1653" target="_blank" style="color:var(--accent)">Никулин Николай</a></div>
+        <div>КА — <a href="https://jira.share-tech.ru/secure/RapidBoard.jspa?rapidView=283&quickFilter=1654" target="_blank" style="color:var(--accent)">Кочергина Анна</a></div>
+        <div>ПЕ — <a href="https://jira.share-tech.ru/secure/RapidBoard.jspa?rapidView=283&quickFilter=1705" target="_blank" style="color:var(--accent)">Прончатов Евгений</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY MODAL -->
+<div class="modal-overlay" id="history-modal">
+  <div class="modal">
+    <div class="modal-title">
+      История снимков
+      <button class="modal-close" onclick="closeHistory()">×</button>
+    </div>
+    <div id="history-list" style="border:1px solid var(--border);border-radius:3px;"></div>
+    <div class="modal-footer">
+      <button class="btn btn-default" style="color:#de350b;border-color:#de350b" onclick="clearAll()">Удалить всё</button>
+      <button class="btn btn-default" onclick="closeHistory()">Закрыть</button>
+    </div>
+  </div>
+</div>
 
 <script>
-const KEY = 'qa_monitor_tariffs_v1';
+const KEY = 'qa_monitor_v2';
+
+const COLUMNS = [
+  { id: 'DEV in progress',  label: 'Dev in progress', color: '#6554c0' },
+  { id: 'Ready for QA',     label: 'Ready for QA',    color: '#ff8b00' },
+  { id: 'QA in progress',   label: 'QA in progress',  color: '#0065ff', track: true },
+  { id: 'QA Failed',        label: 'QA Failed',        color: '#de350b' },
+  { id: 'Awaiting release', label: 'Awaiting release', color: '#00875a' },
+  { id: 'Done',             label: 'Done',             color: '#97a0af' },
+];
+
+let activeFilter = 'all';
 
 function load() {
   try { return JSON.parse(localStorage.getItem(KEY)) || {snapshots:[]}; }
   catch(e) { return {snapshots:[]}; }
 }
 
-function save(data) {
-  localStorage.setItem(KEY, JSON.stringify(data));
-}
+function save(d) { localStorage.setItem(KEY, JSON.stringify(d)); }
 
-const avCls = n => n.includes('Николай')||n.includes('Никулин') ? 'av-h' : n.includes('Анна')||n.includes('Кочерг') ? 'av-k' : 'av-p';
+const avCls  = n => n.includes('Николай')||n.includes('Никулин') ? 'av-h' : n.includes('Анна')||n.includes('Кочерг') ? 'av-k' : 'av-p';
 const avInit = n => n.includes('Николай')||n.includes('Никулин') ? 'НН' : n.includes('Анна')||n.includes('Кочерг') ? 'КА' : 'ПЕ';
-const engShort = n => n.split(' ').slice(0,2).join(' ');
-
-function statusBadge(s) {
-  const m = {'QA in progress':'badge-blue','QA Failed':'badge-red','Ready for QA':'badge-amber','Awaiting release':'badge-gray','Done':'badge-green','DEV in progress':'badge-purple'};
-  return `<span class="badge ${m[s]||'badge-gray'}">${s}</span>`;
-}
-
-function priorityBadge(p) {
-  if (!p) return '';
-  if (p.includes('Критич')) return '<span class="badge badge-red">Крит</span>';
-  if (p.includes('Высок')) return '<span class="badge badge-amber">Высок</span>';
-  if (p.includes('Средн')) return '<span class="badge badge-gray">Средн</span>';
-  return '<span class="badge badge-gray">Низк</span>';
-}
 
 function daysInStatus(key, status, snaps) {
   let d = 1;
@@ -663,230 +604,222 @@ function daysInStatus(key, status, snaps) {
   return d;
 }
 
-function getAlerts(tasks, snaps) {
-  return tasks
-    .filter(t => t.status === 'QA in progress')
-    .map(t => {
-      const days = daysInStatus(t.key, t.status, snaps);
-      const sp = parseInt(t.sp)||0;
-      const limit = sp > 0 ? Math.max(1, Math.ceil(sp/6)) : 1;
-      const level = days >= limit ? 'red' : (days >= Math.max(1,limit-1) && limit > 1 ? 'amber' : null);
-      return { task: t, days, limit, level };
-    })
-    .filter(x => x.level);
+function timeBadgeHtml(task, snaps, track) {
+  const sp = parseInt(task.sp)||0;
+  if (!track || sp === 0) {
+    return `<span class="time-badge none">— нет SP</span>`;
+  }
+  const days = daysInStatus(task.key, task.status, snaps);
+  const limit = Math.max(1, Math.ceil(sp / 6));
+  const pct = Math.min(100, Math.round(days / limit * 100));
+
+  let cls, icon, label;
+  if (days === 1 && snaps.length === 1) {
+    cls = 'new'; icon = '●'; label = 'день 1';
+  } else if (days >= limit) {
+    cls = 'over'; icon = '▲'; label = `${days}д / ${limit}д`;
+  } else if (days >= limit - 1 && limit > 1) {
+    cls = 'warn'; icon = '◆'; label = `${days}д / ${limit}д`;
+  } else {
+    cls = 'ok'; icon = '▼'; label = `${days}д / ${limit}д`;
+  }
+
+  const barColor = cls==='over' ? '#de350b' : cls==='warn' ? '#ff8b00' : '#00875a';
+
+  return `<span class="time-badge ${cls}">${icon} ${label}</span>
+    <div class="time-bar-wrap"><div class="time-bar" style="width:${pct}%;background:${barColor}"></div></div>`;
 }
 
-function render() {
+function cardBorderCls(task, snaps, track) {
+  const sp = parseInt(task.sp)||0;
+  if (!track || sp === 0) return 'time-none';
+  const days = daysInStatus(task.key, task.status, snaps);
+  const limit = Math.max(1, Math.ceil(sp/6));
+  if (days >= limit) return 'time-over';
+  if (days >= limit-1 && limit > 1) return 'time-warn';
+  return 'time-ok';
+}
+
+function priorityLabel(p) {
+  if (!p) return '';
+  if (p.includes('Критич')) return '<span class="label label-crit">Критич</span>';
+  if (p.includes('Высок'))  return '<span class="label label-high">Высокий</span>';
+  if (p.includes('Средн'))  return '<span class="label label-med">Средний</span>';
+  return '<span class="label label-low">Низкий</span>';
+}
+
+function matchFilter(task) {
+  if (activeFilter === 'all') return true;
+  return avInit(task.assignee) === activeFilter;
+}
+
+function renderBoard() {
   const data = load();
   const snaps = data.snapshots;
+  const boardEl = document.getElementById('board');
 
   if (snaps.length === 0) {
-    document.getElementById('last-scan').textContent = 'Нет данных';
-    document.getElementById('footer-snap-count').textContent = '0 снимков';
+    boardEl.innerHTML = `<div class="empty-board">
+      <h2>Нет данных</h2>
+      <p>Нажмите «Импорт снимка» и вставьте JSON задач от Claude</p>
+      <button class="btn btn-primary" onclick="openImport()">+ Импорт снимка</button>
+    </div>`;
+    document.getElementById('snap-indicator').textContent = '';
     return;
   }
 
   const latest = snaps[snaps.length-1];
-  const prev = snaps.length > 1 ? snaps[snaps.length-2] : null;
-  const tasks = latest.tasks || [];
-  const prevTasks = prev ? (prev.tasks||[]) : [];
+  const tasks = (latest.tasks||[]).filter(matchFilter);
 
-  document.getElementById('last-scan').textContent = 'Снимок: ' + latest.date;
-  document.getElementById('footer-snap-count').textContent = snaps.length + ' снимков';
+  document.getElementById('snap-indicator').textContent = `· ${latest.date}`;
 
-  const inProg = tasks.filter(t => t.status === 'QA in progress');
-  const failed = tasks.filter(t => t.status === 'QA Failed');
-  const inProgSP = inProg.reduce((s,t)=>s+(parseInt(t.sp)||0),0);
-  const alerts = getAlerts(tasks, snaps);
+  const cols = COLUMNS.map(col => {
+    const colTasks = tasks.filter(t => t.status === col.id);
 
-  // Metrics
-  function deltaStr(cur, prv, inverse) {
-    if (!prev) return '';
-    const d = cur - prv;
-    if (d === 0) return `<span style="color:var(--text3)">= вчера</span>`;
-    const good = inverse ? d < 0 : d > 0;
-    const cls = good ? 'delta-good' : 'delta-bad';
-    return `<span class="${cls}">${d>0?'+':''}${d} vs вчера</span>`;
-  }
+    const cardsHtml = colTasks.length === 0
+      ? `<div class="no-cards">Нет задач</div>`
+      : colTasks.map(t => {
+          const borderCls = cardBorderCls(t, snaps, col.track);
+          const timeBadge = timeBadgeHtml(t, snaps, col.track);
+          return `<div class="card ${borderCls}">
+            <a class="card-key" href="https://jira.share-tech.ru/browse/${t.key}" target="_blank">${t.key}</a>
+            <div class="card-summary">${t.summary}</div>
+            <div class="card-labels">${priorityLabel(t.priority)}</div>
+            <div style="margin-bottom:6px">${timeBadge}</div>
+            <div class="card-footer">
+              <div class="card-assignee">
+                <div class="avatar ${avCls(t.assignee)}">${avInit(t.assignee)}</div>
+                <span class="assignee-name">${t.assignee.split(' ')[0]}</span>
+              </div>
+              <div class="card-meta">
+                ${t.sp && t.sp !== 'Нет' ? `<span class="sp-badge">${t.sp} SP</span>` : ''}
+              </div>
+            </div>
+          </div>`;
+        }).join('');
 
-  document.getElementById('m-total').textContent = tasks.length;
-  document.getElementById('m-total-d').innerHTML = deltaStr(tasks.length, prevTasks.length, false);
-  document.getElementById('m-inprog').textContent = inProg.length;
-  document.getElementById('m-inprog-d').innerHTML = (inProgSP ? `<span style="color:var(--text3)">${inProgSP} SP</span> ` : '') + deltaStr(inProg.length, prevTasks.filter(t=>t.status==='QA in progress').length, false);
-  document.getElementById('m-failed').textContent = failed.length;
-  document.getElementById('m-failed-d').innerHTML = deltaStr(failed.length, prevTasks.filter(t=>t.status==='QA Failed').length, true);
+    return `<div class="col">
+      <div class="col-header">
+        <div class="col-dot" style="background:${col.color}"></div>
+        <span class="col-name">${col.label}</span>
+        <span class="col-count">${colTasks.length}</span>
+      </div>
+      <div class="col-cards">${cardsHtml}</div>
+    </div>`;
+  });
 
-  const mAlerts = document.getElementById('m-alerts');
-  mAlerts.textContent = alerts.length;
-  mAlerts.style.color = alerts.length > 0 ? 'var(--red)' : 'var(--accent)';
-  document.getElementById('m-alerts-d').innerHTML = alerts.length > 0
-    ? `<span class="delta-bad">${alerts.filter(a=>a.level==='red').length} красных</span>`
-    : `<span class="delta-good">всё в норме</span>`;
-
-  // Moves
-  const moved = [];
-  if (prev) {
-    tasks.forEach(t => {
-      const p = prevTasks.find(x=>x.key===t.key);
-      if (p && p.status !== t.status) moved.push({task:t, from:p.status, to:t.status});
-    });
-  }
-
-  const movesEl = document.getElementById('moves-list');
-  if (!prev) {
-    movesEl.innerHTML = `<div class="empty">Первый снимок — базовая линия установлена (${tasks.length} задач)</div>`;
-  } else if (moved.length === 0) {
-    movesEl.innerHTML = `<div class="alert-card ok"><div class="alert-info"><div class="alert-key">Нет движений</div><div class="alert-summary">Статусы задач не изменились по сравнению с ${prev.date}</div></div></div>`;
-  } else {
-    movesEl.innerHTML = moved.map(({task,from,to}) => {
-      const isGood = to === 'Done' || to === 'Awaiting release';
-      return `<div class="move-card">
-        <div class="eng-cell"><div class="avatar ${avCls(task.assignee)}">${avInit(task.assignee)}</div><span class="eng-name">${engShort(task.assignee)}</span></div>
-        <span class="key-link" style="cursor:default">${task.key}</span>
-        <span style="flex:1;color:var(--text2);font-size:11px">${task.summary.slice(0,50)}${task.summary.length>50?'…':''}</span>
-        ${statusBadge(from)}
-        <span class="move-arrow">→</span>
-        ${statusBadge(to)}
-        ${isGood ? '<span class="badge badge-green">✓</span>' : ''}
-      </div>`;
-    }).join('');
-  }
-
-  // In progress table
-  const ipBody = document.getElementById('inprog-body');
-  if (inProg.length === 0) {
-    ipBody.innerHTML = `<tr><td colspan="6" class="empty">Нет задач в QA in progress</td></tr>`;
-  } else {
-    ipBody.innerHTML = inProg.map(t => {
-      const days = daysInStatus(t.key, t.status, snaps);
-      const sp = parseInt(t.sp)||0;
-      const limit = sp > 0 ? Math.max(1, Math.ceil(sp/6)) : null;
-      const over = limit && days >= limit;
-      const pct = limit ? Math.min(100, Math.round(days/limit*100)) : 0;
-      const barColor = over ? '#f87171' : days >= (limit-1) && limit > 1 ? '#fbbf24' : '#4ade80';
-      return `<tr>
-        <td><div class="eng-cell"><div class="avatar ${avCls(t.assignee)}">${avInit(t.assignee)}</div><span class="eng-name">${engShort(t.assignee)}</span></div></td>
-        <td><a class="key-link" href="https://jira.share-tech.ru/browse/${t.key}" target="_blank">${t.key}</a><div class="summary-text">${t.summary.slice(0,60)}${t.summary.length>60?'…':''}</div></td>
-        <td style="font-weight:700;color:var(--text)">${t.sp||'—'}</td>
-        <td style="color:${over?'var(--red)':'var(--text)'};font-weight:${over?'700':'400'}">
-          ${days}д
-          ${limit ? `<div class="prog-wrap"><div class="prog-bar" style="width:${pct}%;background:${barColor}"></div></div>` : ''}
-        </td>
-        <td style="color:var(--text3)">${limit ? limit+'д' : '—'}</td>
-        <td>${over ? '<span class="badge badge-red">Превышен</span>' : '<span class="badge badge-green">OK</span>'}</td>
-      </tr>`;
-    }).join('');
-  }
-
-  // All tasks table
-  const allBody = document.getElementById('all-body');
-  allBody.innerHTML = tasks.map(t => `<tr>
-    <td><div class="eng-cell"><div class="avatar ${avCls(t.assignee)}">${avInit(t.assignee)}</div><span class="eng-name">${engShort(t.assignee)}</span></div></td>
-    <td><a class="key-link" href="https://jira.share-tech.ru/browse/${t.key}" target="_blank">${t.key}</a><div class="summary-text">${t.summary.slice(0,55)}${t.summary.length>55?'…':''}</div></td>
-    <td>${statusBadge(t.status)}</td>
-    <td style="font-weight:700">${t.sp||'—'}</td>
-    <td>${priorityBadge(t.priority)}</td>
-  </tr>`).join('');
-
-  // Alerts tab
-  const alertsEl = document.getElementById('alerts-list');
-  if (alerts.length === 0) {
-    alertsEl.innerHTML = `<div class="alert-card ok"><div class="alert-info"><div class="alert-key">Алертов нет</div><div class="alert-summary">Все задачи в QA in progress укладываются в лимит по SP</div></div></div>`;
-  } else {
-    alertsEl.innerHTML = alerts.map(({task,days,limit,level}) => `
-      <div class="alert-card ${level==='amber'?'warn':''}">
-        <div class="alert-info">
-          <div class="alert-key">${task.key} — ${engShort(task.assignee)}</div>
-          <div class="alert-summary">${task.summary}</div>
-          <div class="alert-meta">SP: ${task.sp||'—'} · Лимит: ${limit} дн. · В статусе уже: ${days} дн.</div>
-        </div>
-        <span class="badge ${level==='red'?'badge-red':'badge-amber'}">${level==='red'?'Прокрастинация':'Внимание'}</span>
-      </div>`).join('');
-  }
-
-  // History
-  const histEl = document.getElementById('history-list');
-  if (snaps.length === 0) {
-    histEl.innerHTML = '<div class="empty">История пуста</div>';
-  } else {
-    histEl.innerHTML = [...snaps].reverse().map((snap, i) => {
-      const t = snap.tasks||[];
-      const ip = t.filter(x=>x.status==='QA in progress').length;
-      const f = t.filter(x=>x.status==='QA Failed').length;
-      const d = t.filter(x=>x.status==='Done').length;
-      return `<div class="hist-row">
-        <span class="hist-date">${snap.date} ${i===0?'<span class="badge badge-green" style="font-size:9px">актуальный</span>':''}</span>
-        <div class="hist-badges">
-          <span class="badge badge-blue">${ip} in progress</span>
-          <span class="badge badge-red">${f} failed</span>
-          <span class="badge badge-green">${d} done</span>
-          <button style="font-size:9px;padding:2px 8px;border-color:rgba(248,113,113,0.2);color:var(--red)" onclick="deleteSnap('${snap.date}')">удалить</button>
-        </div>
-      </div>`;
-    }).join('');
-  }
+  boardEl.innerHTML = cols.join('');
 }
 
-function showTab(name) {
-  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
-  document.querySelectorAll('.tab')[['today','alerts','history','import'].indexOf(name)].classList.add('active');
+function setFilter(f) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-chip').forEach(el => el.classList.remove('active'));
+  const idx = ['all','НН','КА','ПЕ'].indexOf(f);
+  document.querySelectorAll('.filter-chip')[idx]?.classList.add('active');
+  renderBoard();
+}
+
+function openImport() {
+  document.getElementById('import-modal').classList.add('open');
+  document.getElementById('snap-date').valueAsDate = new Date();
+  document.getElementById('json-input').value = '';
+  document.getElementById('import-msg').innerHTML = '';
+}
+
+function closeImport() {
+  document.getElementById('import-modal').classList.remove('open');
 }
 
 function importSnapshot() {
   const raw = document.getElementById('json-input').value.trim();
-  const dateInput = document.getElementById('snap-date').value;
+  const dateVal = document.getElementById('snap-date').value;
   const msgEl = document.getElementById('import-msg');
 
   if (!raw) { msgEl.innerHTML = '<div class="msg err">Вставьте JSON с задачами</div>'; return; }
 
   let tasks;
   try { tasks = JSON.parse(raw); }
-  catch(e) { msgEl.innerHTML = '<div class="msg err">Ошибка парсинга JSON: ' + e.message + '</div>'; return; }
+  catch(e) { msgEl.innerHTML = `<div class="msg err">Ошибка JSON: ${e.message}</div>`; return; }
 
-  if (!Array.isArray(tasks) || tasks.length === 0) {
+  if (!Array.isArray(tasks)||tasks.length===0) {
     msgEl.innerHTML = '<div class="msg err">JSON должен быть массивом задач</div>'; return;
   }
 
-  const date = dateInput
-    ? new Date(dateInput).toLocaleDateString('ru-RU')
+  const date = dateVal
+    ? new Date(dateVal).toLocaleDateString('ru-RU')
     : new Date().toLocaleDateString('ru-RU');
 
   const data = load();
-  const existing = data.snapshots.findIndex(s => s.date === date);
-  if (existing >= 0) data.snapshots[existing] = {date, tasks};
-  else data.snapshots.push({date, tasks});
-  if (data.snapshots.length > 30) data.snapshots = data.snapshots.slice(-30);
+  const idx = data.snapshots.findIndex(s=>s.date===date);
+  if (idx>=0) data.snapshots[idx]={date,tasks};
+  else data.snapshots.push({date,tasks});
+  if (data.snapshots.length>30) data.snapshots=data.snapshots.slice(-30);
   save(data);
 
-  msgEl.innerHTML = `<div class="msg">✓ Снимок за ${date} сохранён — ${tasks.length} задач</div>`;
-  render();
+  msgEl.innerHTML = `<div class="msg ok">✓ Сохранено: ${date}, ${tasks.length} задач</div>`;
+  renderBoard();
+  setTimeout(closeImport, 1200);
 }
 
-function clearInput() {
-  document.getElementById('json-input').value = '';
-  document.getElementById('import-msg').innerHTML = '';
+function openHistory() {
+  const data = load();
+  const snaps = data.snapshots;
+  const el = document.getElementById('history-list');
+
+  if (snaps.length === 0) {
+    el.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text3)">История пуста</div>';
+  } else {
+    el.innerHTML = [...snaps].reverse().map((snap, i) => {
+      const t = snap.tasks||[];
+      const ip = t.filter(x=>x.status==='QA in progress').length;
+      const f  = t.filter(x=>x.status==='QA Failed').length;
+      const d  = t.filter(x=>x.status==='Done').length;
+      const aw = t.filter(x=>x.status==='Awaiting release').length;
+      return `<div class="hist-item">
+        <div>
+          <span class="hist-date">${snap.date}</span>
+          ${i===0?'<span class="chip chip-cur" style="margin-left:6px">Текущий</span>':''}
+        </div>
+        <div class="hist-chips">
+          <span class="chip chip-blue">${ip} in progress</span>
+          <span class="chip chip-red">${f} failed</span>
+          <span class="chip chip-green">${aw} await</span>
+          <span class="chip chip-gray">${d} done</span>
+          <button onclick="deleteSnap('${snap.date}')" style="font-size:10px;background:none;border:none;color:#de350b;cursor:pointer;padding:0 4px">✕</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  document.getElementById('history-modal').classList.add('open');
 }
 
-function clearAllData() {
-  if (!confirm('Удалить всю историю снимков? Это действие нельзя отменить.')) return;
-  save({snapshots:[]});
-  render();
+function closeHistory() {
+  document.getElementById('history-modal').classList.remove('open');
 }
 
 function deleteSnap(date) {
-  if (!confirm('Удалить снимок за ' + date + '?')) return;
+  if (!confirm(`Удалить снимок за ${date}?`)) return;
   const data = load();
-  data.snapshots = data.snapshots.filter(s => s.date !== date);
+  data.snapshots = data.snapshots.filter(s=>s.date!==date);
   save(data);
-  render();
+  renderBoard();
+  openHistory();
 }
 
-// Set today's date in import
-document.getElementById('snap-date').valueAsDate = new Date();
+function clearAll() {
+  if (!confirm('Удалить всю историю?')) return;
+  save({snapshots:[]});
+  renderBoard();
+  closeHistory();
+}
 
-render();
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target===el) el.classList.remove('open'); });
+});
+
+renderBoard();
 </script>
 </body>
 </html>
